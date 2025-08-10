@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SAFE - School Assessment for Equity</title>
+  <style>
+    :root{
+      --bg1:#7c3aed;
+      --bg2:#06b6d4;
+      --card:#ffffff;
+      --ink:#0f172a;
+      --muted:#475569;
+      --accent:#22c55e;
+      --accent2:#3b82f6;
+      --accent3:#f97316;
+      --accent4:#ef4444;
+      --ring:#a78bfa;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;color:var(--ink)}
+    body{
+      min-height:100vh;
+      background: radial-gradient(1200px 800px at 10% 10%, rgba(255,255,255,0.25), transparent 60%),
+                  linear-gradient(135deg,var(--bg1),var(--bg2));
+    }
+    .container{max-width:1180px;margin:0 auto;padding:22px}
+    .nav{display:flex;justify-content:space-between;align-items:center;color:#fff;gap:12px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:40px;height:40px;border-radius:12px;background: conic-gradient(from 0deg,#22c55e,#3b82f6,#f97316,#ef4444,#22c55e);box-shadow:0 8px 30px rgba(0,0,0,.25)}
+    h1{font-size:20px;margin:0}
+    .pill{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff;padding:8px 12px;border-radius:999px;font-size:14px;backdrop-filter: blur(6px)}
+    .card{background:var(--card);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.20);border:1px solid #e2e8f0;padding:20px;margin-top:16px}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:center}
+    @media (max-width:980px){.hero{grid-template-columns:1fr}}
+    .lead{color:var(--muted);margin:0}
+    .progress{background:#eef2ff;border-radius:12px;border:1px solid #c7d2fe;height:12px;overflow:hidden}
+    .progress>span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent2),#60a5fa,#93c5fd);transition:width .4s ease}
+    .note{font-size:13px;color:var(--muted)}
+    .stepper{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+    .step{
+      display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;
+      background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);color:#fff
+    }
+    .step.active{background:#fff;color:#0f172a;border-color:#fff}
+    .grid{display:grid;grid-template-columns:1fr;gap:16px}
+    .domain{border:1px solid #e5e7eb;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f8fafc);padding:14px}
+    .item{padding:12px;margin:10px 0;border-radius:14px;border:1px dashed #cbd5e1;background:#fff;transition:transform .15s ease, box-shadow .15s ease}
+    .item:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(2,6,23,.08)}
+    .q{margin:0 0 12px;font-weight:700}
+    .options{display:grid;gap:8px}
+    .option{
+      display:flex;gap:10px;align-items:flex-start;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;cursor:pointer
+    }
+    .option input{margin-top:3px}
+    .option:hover{border-color:#c7d2fe;box-shadow:0 8px 20px rgba(59,130,246,.08)}
+    .option.active{outline:3px solid #93c5fd;background:#ffffff}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{border:none;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+    .primary{background:linear-gradient(90deg,var(--accent),#16a34a);color:#052e15;border:1px solid #86efac}
+    .secondary{background:linear-gradient(90deg,#60a5fa,#3b82f6);color:#062142;border:1px solid #93c5fd}
+    .ghost{background:#fff;color:#0f172a;border:1px solid #e2e8f0}
+    .danger{background:linear-gradient(90deg,#fb7185,#ef4444);color:#fff;border:1px solid #fecdd3}
+    textarea{width:100%;min-height:90px;padding:10px 12px;border-radius:12px;border:1px solid #cbd5e1;background:#fff;resize:vertical;font-family:inherit;font-size:14px}
+    input[type="text"], input[type="email"], select{
+      width:100%;padding:10px 12px;border-radius:12px;border:1px solid #cbd5e1;background:#fff;font-family:inherit;font-size:14px
+    }
+    .openwrap{padding:12px;margin:10px 0;border-radius:14px;border:1px dashed #cbd5e1;background:#fff}
+    .hidden{display:none}
+
+    /* Dashboard */
+    .dash-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media (max-width:980px){.dash-grid{grid-template-columns:1fr}}
+    .kpi{display:flex;justify-content:space-between;align-items:center}
+    .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media (max-width:980px){.tiles{grid-template-columns:1fr}}
+    .tile{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:14px}
+    .tile h4{margin:0 0 8px}
+    .bar-row{display:flex;align-items:center;gap:10px;margin:6px 0}
+    .bar-label{width:180px}
+    .bar{flex:1;height:12px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:999px;overflow:hidden}
+    .bar>span{display:block;height:100%;background:linear-gradient(90deg,#34d399,#22c55e,#16a34a);width:0%}
+    .ctrls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    select, .btn-sm{
+      padding:8px 10px;border-radius:10px;border:1px solid #d1d5db;background:#fff;font-weight:600;cursor:pointer
+    }
+    canvas{width:100%;height:280px;border-radius:14px;border:1px solid #e5e7eb;background:#fff}
+    .welcome-hero{
+      background:linear-gradient(180deg,#ffffff,#f8fafc);
+      border:1px solid #e5e7eb;border-radius:20px;padding:18px;margin-top:12px
+    }
+    .em{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;border:1px solid #c7d2fe;color:#1e293b;font-weight:700;font-size:12px}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:780px){.two{grid-template-columns:1fr}}
+
+    /* New domain header with embedded progress */
+    .domainHeader{
+      background:linear-gradient(180deg,#ffffff,#f8fafc);
+      border:1px solid #e5e7eb;border-radius:16px;padding:14px;margin-bottom:12px
+    }
+    .domainHeader h2{
+      margin:0 0 10px;font-size:28px;font-weight:900;letter-spacing:.2px
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>SAFE - School Assessment for Equity</h1>
+      </div>
+      <div class="pill"><span>🏁</span><strong id="progressPctTop">0%</strong> complete</div>
+    </div>
+
+    <div class="card hero">
+      <div>
+        <!-- Hero progress hidden across pages to avoid duplication -->
+        <div id="progressWrap" style="display:none">
+          <div class="progress"><span id="progressFill"></span></div>
+          <div class="note" id="progressNote">0 of 50 answered</div>
+          <div class="stepper" id="stepper"></div>
+        </div>
+        <div id="stepperWrap">
+          <div class="stepper" id="stepper"></div>
+        </div>
+      </div>
+      <div class="card" id="topActionsCard" style="margin:0">
+        <div class="actions">
+          <button class="ghost" id="backBtnTop">Back</button>
+          <button class="secondary" id="saveBtnTop">Save</button>
+          <button class="primary" id="nextBtnTop">Next</button>
+        </div>
+        <p class="note">Answers save locally.</p>
+      </div>
+    </div>
+
+    <div class="card" id="pageCard">
+      <div id="page" class="grid"></div>
+      <div class="actions" style="margin-top:16px">
+        <button class="ghost" id="backBtnBottom">Back</button>
+        <button class="secondary" id="saveBtnBottom">Save</button>
+        <button class="primary" id="nextBtnBottom">Next</button>
+      </div>
+    </div>
+
+    <div id="resultsCard" class="card hidden">
+      <div class="dash-grid">
+        <div>
+          <div class="kpi" style="margin-bottom:8px"><h2 style="margin:0">Results dashboard</h2></div>
+          <div class="ctrls">
+<button class="btn-sm" id="recalcBtn">Recalculate</button>
+            <button class="btn-sm" id="downloadCsv">Download CSV</button>
+            <button class="btn-sm" id="downloadJson">Download JSON</button>
+            <button class="btn-sm" id="resetBtn">Reset</button>
+          </div>
+          <div class="tiles">
+            <div class="tile">
+              <h4>Overall mean</h4>
+              <div class="kpi"><div>Score</div><strong id="overallMean">0.00</strong></div>
+              <div class="kpi"><div>Completion</div><strong id="completionPct">0%</strong></div>
+            </div>
+            <div class="tile">
+              <h4>Domain bars</h4>
+              <div id="bars"></div>
+            </div>
+            <div class="tile">
+              <h4>Completion donut</h4>
+              <canvas id="donut"></canvas>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="tile">
+            <h4>Radar</h4>
+            <canvas id="radar"></canvas>
+          </div>
+          <div class="tile">
+            <h4>Quick notes</h4>
+            <p class="note">Means at or above 4.0 suggest strong, consistent practice. Plan actions for domains below 3.5.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const DATA = JSON.parse(localStorage.getItem("CALL_EQ_DATA")) || [
+      {
+        key:"D1", name:"Focus on Learning", emoji:"📚", items:[
+          { q:"The school's vision explicitly includes equity and excellence for all students.", opts:[
+            "No clear vision or no mention of equity.",
+            "Vision mentions equity but is rarely referenced.",
+            "Vision includes equity and is referenced occasionally in decisions.",
+            "Vision is used regularly to guide decisions, including equity priorities.",
+            "Vision is embedded in daily practice, guiding all equity and learning decisions."
+          ]},
+          { q:"Teachers and leaders set learning goals that address opportunity gaps.", opts:[
+            "Goals do not address gaps between student groups.",
+            "Gaps are acknowledged but not targeted in goals.",
+            "Some goals address gaps for specific groups.",
+            "Most goals intentionally target opportunity gaps.",
+            "All goals address gaps systematically with measurable equity indicators."
+          ]},
+          { q:"Professional learning explicitly connects to equity-focused learning goals.", opts:[
+            "No connection to equity-focused goals.",
+            "Some sessions address equity without a clear connection to goals.",
+            "Many sessions align with equity goals but inconsistently.",
+            "Most sessions intentionally address equity and align with goals.",
+            "All sessions are strategically designed to advance equity-focused goals."
+          ]},
+          { q:"Students are aware of and can articulate the school's learning priorities.", opts:[
+            "Students are unaware of learning priorities.",
+            "Some students know the priorities but not in detail.",
+            "Many students know the priorities but reference them inconsistently.",
+            "Most students understand and can describe the priorities.",
+            "All students can explain priorities and how they connect to their learning."
+          ]},
+          { q:"Learning goals are differentiated for diverse learners.", opts:[
+            "Goals are uniform for all students.",
+            "Some adjustments are made for individual needs.",
+            "Many adjustments are made but inconsistently across groups.",
+            "Most goals are adapted for diverse needs and contexts.",
+            "All goals are tailored to diverse learners and co-developed with student input."
+          ]},
+          { q:"School leadership ensures curriculum reflects multiple cultural perspectives.", opts:[
+            "Curriculum does not reflect diverse perspectives.",
+            "Some content includes diversity but inconsistently.",
+            "Diverse perspectives appear in many areas but gaps remain.",
+            "Most curriculum integrates diverse perspectives meaningfully.",
+            "Curriculum fully embeds multiple cultural perspectives across grades and subjects."
+          ]},
+          { q:"Equity priorities are reflected in school improvement plans.", opts:[
+            "Equity is absent from improvement plans.",
+            "Equity is mentioned but not central.",
+            "Equity is addressed in some strategies.",
+            "Equity is a central component of most strategies.",
+            "Equity is foundational to all strategies and regularly reviewed."
+          ]},
+          { q:"Student voice is integrated into goal-setting.", opts:[
+            "Students are not involved in setting goals.",
+            "Some students provide input informally.",
+            "Student input is sought in certain areas.",
+            "Most goals incorporate structured student feedback.",
+            "All goals are co-created with diverse student voices."
+          ]},
+          { q:"Equity data is reviewed alongside academic data in goal-setting.", opts:[
+            "Only academic data is reviewed.",
+            "Equity-related data is reviewed occasionally.",
+            "Equity data is reviewed regularly for some groups.",
+            "Equity data is reviewed consistently for most groups.",
+            "Equity data is systematically analyzed for all groups to shape goals."
+          ]},
+          { q:"Learning goals are communicated in accessible language to all families.", opts:[
+            "Goals are not communicated to families.",
+            "Goals are shared in technical or inaccessible language.",
+            "Many families receive understandable communication.",
+            "Most families receive accessible communication in multiple formats.",
+            "All families receive clear, culturally and linguistically responsive communication."
+          ]},
+        ]
+      },
+      {
+        key:"D2", name:"Monitoring Teaching and Learning", emoji:"🧭", items:[
+          { q:"Classroom observations examine how instruction meets diverse learners' needs.", opts:[
+            "Observations do not address diverse learners' needs.",
+            "Some observations consider diverse learners but inconsistently.",
+            "Many observations address diverse needs in feedback.",
+            "Most observations systematically include diverse learner focus.",
+            "All observations embed equity-focused feedback for diverse learners."
+          ]},
+          { q:"Feedback from observations includes strategies for culturally responsive teaching.", opts:[
+            "Feedback does not address cultural responsiveness.",
+            "Some feedback includes general references to culture.",
+            "Feedback sometimes includes specific culturally responsive strategies.",
+            "Most feedback includes tailored culturally responsive strategies.",
+            "All feedback embeds actionable culturally responsive practices."
+          ]},
+          { q:"Leaders monitor how curriculum reflects multiple cultural perspectives.", opts:[
+            "Curriculum monitoring ignores cultural representation.",
+            "Cultural perspectives are noted but not acted upon.",
+            "Many subjects are reviewed for representation but gaps remain.",
+            "Most curriculum is reviewed and improved for cultural perspectives.",
+            "All curriculum is monitored and adapted for inclusive representation."
+          ]},
+          { q:"Data monitoring includes disaggregated results by student group.", opts:[
+            "Data is not disaggregated.",
+            "Data is disaggregated occasionally.",
+            "Disaggregated data is used in some subject areas.",
+            "Disaggregated data is reviewed consistently in most areas.",
+            "Disaggregated data drives decision-making across all areas."
+          ]},
+          { q:"Leaders ensure assessments are fair and accessible to all students.", opts:[
+            "No review of assessment fairness or accessibility.",
+            "Some adjustments are made for fairness or accessibility.",
+            "Many assessments are reviewed for fairness but inconsistently.",
+            "Most assessments are reviewed and adjusted for accessibility.",
+            "All assessments are systematically reviewed and adapted for equity."
+          ]},
+          { q:"Instructional monitoring includes student engagement across subgroups.", opts:[
+            "Engagement is not monitored by subgroup.",
+            "Engagement by subgroup is occasionally observed.",
+            "Engagement data is collected for some subgroups.",
+            "Engagement across subgroups is monitored regularly.",
+            "Engagement data is systematically collected and acted upon for all subgroups."
+          ]},
+          { q:"Leaders track the implementation of inclusive instructional strategies.", opts:[
+            "No tracking of inclusive strategies.",
+            "Some tracking occurs informally.",
+            "Tracking occurs for some grade levels or subjects.",
+            "Most areas are tracked for inclusive strategy implementation.",
+            "All areas are tracked with data used to refine practice."
+          ]},
+          { q:"Monitoring focuses on both academic and social-emotional learning.", opts:[
+            "Monitoring is limited to academics.",
+            "Social-emotional learning is occasionally noted.",
+            "Monitoring includes SEL in some programs.",
+            "Most programs are monitored for both academics and SEL.",
+            "All programs are systematically monitored for both academics and SEL outcomes."
+          ]},
+          { q:"Teacher evaluations include equity-focused competencies.", opts:[
+            "Equity competencies are absent from evaluations.",
+            "Some equity indicators are included inconsistently.",
+            "Many evaluations include equity indicators.",
+            "Most evaluations consistently assess equity competencies.",
+            "All evaluations integrate equity competencies with actionable follow-up."
+          ]},
+          { q:"Leaders monitor student access to advanced coursework.", opts:[
+            "Access is not reviewed.",
+            "Access is reviewed occasionally.",
+            "Many advanced courses are monitored for equitable access.",
+            "Most advanced courses are reviewed and adjusted for equity.",
+            "All advanced coursework access is monitored and barriers addressed."
+          ]},
+        ]
+      },
+      {
+        key:"D3", name:"Building Nested Learning Communities", emoji:"🤝", items:[
+          { q:"Teacher teams collaborate to address equity-related learning gaps.", opts:[
+            "Equity is not part of team collaboration.",
+            "Equity is occasionally discussed in team meetings.",
+            "Many teams address equity-related gaps.",
+            "Most teams address equity gaps in structured ways.",
+            "All teams collaboratively address equity-related gaps."
+          ]},
+          { q:"Leaders facilitate cross-grade discussions on culturally relevant pedagogy.", opts:[
+            "No cross-grade discussions occur.",
+            "Discussions occur informally and infrequently.",
+            "Many grades engage in these discussions.",
+            "Most grades have structured cross-grade discussions.",
+            "All grades regularly participate in equity-focused cross-grade learning."
+          ]},
+          { q:"Collaborative planning time includes analysis of equity data.", opts:[
+            "No equity data is discussed.",
+            "Some teams review equity data occasionally.",
+            "Many teams review equity data regularly.",
+            "Most collaborative sessions use equity data to guide planning.",
+            "All collaborative planning embeds equity data analysis."
+          ]},
+          { q:"Peer coaching addresses inclusive teaching practices.", opts:[
+            "No peer coaching occurs.",
+            "Some peer coaching includes general inclusivity discussion.",
+            "Many coaching sessions focus on inclusive practices.",
+            "Most peer coaching is targeted to inclusive teaching.",
+            "Peer coaching systematically develops inclusive practices school wide."
+          ]},
+          { q:"Leaders support staff in learning from families and communities.", opts:[
+            "No structures exist for learning from families.",
+            "Some leaders encourage occasional community engagement.",
+            "Many leaders support community-informed learning.",
+            "Most staff engage regularly with families to inform practice.",
+            "All staff systematically learn from and with families and communities."
+          ]},
+          { q:"Collaboration includes non-teaching staff in equity conversations.", opts:[
+            "Non-teaching staff are excluded.",
+            "Some non-teaching staff join equity conversations occasionally.",
+            "Many non-teaching staff participate regularly.",
+            "Most equity conversations include non-teaching staff.",
+            "All staff, teaching and non-teaching, are engaged in equity dialogue."
+          ]},
+          { q:"The school networks with external organizations to address equity goals.", opts:[
+            "No external networking for equity.",
+            "Some leaders network informally.",
+            "Partnerships exist in some programs.",
+            "Most programs include active equity-focused partnerships.",
+            "Equity-focused networking is embedded across the school."
+          ]},
+          { q:"Leaders provide resources for equity-focused professional learning communities.", opts:[
+            "No resources for equity-focused PLCs.",
+            "Some PLCs focus on equity without dedicated resources.",
+            "Many PLCs receive partial resource support.",
+            "Most PLCs are resourced for equity work.",
+            "All PLCs receive full resources for sustained equity-focused work."
+          ]},
+          { q:"Students participate in learning communities that address school improvement.", opts:[
+            "Students are not included in learning communities.",
+            "Some students join occasionally.",
+            "Many students participate in some improvement work.",
+            "Most learning communities include student voice.",
+            "All learning communities systematically include diverse student voices."
+          ]},
+          { q:"Teams share and celebrate successes in equity-focused initiatives.", opts:[
+            "Successes are not shared.",
+            "Successes are shared informally.",
+            "Many successes are celebrated in teams.",
+            "Most successes are shared publicly within the school.",
+            "All successes are celebrated and documented to inspire future work."
+          ]},
+        ]
+      },
+      {
+        key:"D4", name:"Acquiring and Allocating Resources", emoji:"🧰", items:[
+          { q:"Budget allocations prioritize addressing opportunity gaps.", opts:[
+            "No link between budget and opportunity gaps.",
+            "Occasional funding targets equity needs.",
+            "Many allocations address some gaps.",
+            "Most allocations target equity needs systematically.",
+            "All allocations are equity driven and regularly evaluated."
+          ]},
+          { q:"Time is allocated for equity-focused collaboration.", opts:[
+            "No time allocated.",
+            "Occasional ad hoc time provided.",
+            "Many teams have some dedicated time.",
+            "Most teams have regular equity-focused time.",
+            "All teams have protected equity collaboration time."
+          ]},
+          { q:"Technology is distributed equitably to all student groups.", opts:[
+            "No equity review of technology access.",
+            "Technology gaps are acknowledged but not addressed.",
+            "Many gaps addressed.",
+            "Most access gaps resolved.",
+            "Technology access is equitable and monitored regularly."
+          ]},
+          { q:"Professional learning funds prioritize inclusive instructional practices.", opts:[
+            "Funds not tied to inclusive practices.",
+            "Some funds allocated inconsistently.",
+            "Many funds support inclusivity training.",
+            "Most funds prioritize inclusive practice learning.",
+            "All funds align with equity and inclusivity goals."
+          ]},
+          { q:"Physical spaces are designed for accessibility and inclusion.", opts:[
+            "Spaces are not accessible to all.",
+            "Some spaces adapted for accessibility.",
+            "Many spaces inclusive but gaps remain.",
+            "Most spaces are inclusive and accessible.",
+            "All spaces fully inclusive, accessible, and culturally welcoming."
+          ]},
+          { q:"Resource allocation decisions involve diverse stakeholder input.", opts:[
+            "No stakeholder involvement.",
+            "Some input from select groups.",
+            "Many groups consulted.",
+            "Most resource decisions involve diverse input.",
+            "All resource allocations are co-developed with diverse stakeholders."
+          ]},
+          { q:"Translation and interpretation services are funded for family engagement.", opts:[
+            "No translation services funded.",
+            "Some translation provided inconsistently.",
+            "Many events include translation.",
+            "Most family communications are translated.",
+            "All communications and events offer full translation and interpretation."
+          ]},
+          { q:"Extracurricular program funding reflects diverse student interests.", opts:[
+            "Programs do not reflect diversity of interests.",
+            "Some diversity in funded programs.",
+            "Many diverse interests represented.",
+            "Most programs reflect student diversity.",
+            "All programs align with diverse student interests and needs."
+          ]},
+          { q:"Equity audits inform resource allocation.", opts:[
+            "No equity audits conducted.",
+            "Audits done occasionally.",
+            "Many decisions informed by audits.",
+            "Most resource decisions follow audit recommendations.",
+            "All resource allocations guided by regular equity audits."
+          ]},
+          { q:"Leaders secure external funding to support equity initiatives.", opts:[
+            "No external funding sought.",
+            "Funding sought occasionally.",
+            "Many initiatives supported externally.",
+            "Most initiatives receive external support.",
+            "All major equity initiatives have sustained external funding."
+          ]},
+        ]
+      },
+      {
+        key:"D5", name:"Safe and Effective Learning Environment", emoji:"🛡️", items:[
+          { q:"Behavior expectations are co-developed with students and families.", opts:[
+            "Expectations set without input.",
+            "Limited input from a few groups.",
+            "Many voices consulted.",
+            "Most expectations co-developed inclusively.",
+            "All expectations co-created with diverse stakeholders."
+          ]},
+          { q:"Restorative practices are used in behavior management.", opts:[
+            "No restorative practices used.",
+            "Occasional restorative conversations.",
+            "Many cases use restorative approaches.",
+            "Most cases resolved restoratively.",
+            "All discipline processes embed restorative practices."
+          ]},
+          { q:"Staff receive training on implicit bias in discipline.", opts:[
+            "No training provided.",
+            "One-time training only.",
+            "Many staff trained periodically.",
+            "Most staff trained annually.",
+            "All staff trained regularly with follow-up support."
+          ]},
+          { q:"School climate surveys include questions on inclusion and belonging.", opts:[
+            "Surveys absent or no inclusion items.",
+            "Inclusion items appear occasionally.",
+            "Many surveys include them.",
+            "Most surveys include and act on results.",
+            "All surveys include inclusion measures and drive change."
+          ]},
+          { q:"Safety procedures account for the needs of all student groups.", opts:[
+            "Procedures are generic.",
+            "Some groups' needs considered.",
+            "Many needs addressed.",
+            "Most procedures adapted for diverse needs.",
+            "All safety measures fully inclusive and accessible."
+          ]},
+          { q:"Anti-bullying efforts address bias-based harassment.", opts:[
+            "No bias-based bullying addressed.",
+            "Some incidents addressed reactively.",
+            "Many incidents addressed proactively.",
+            "Most anti-bullying programs address bias.",
+            "All efforts proactively prevent and respond to bias-based harassment."
+          ]},
+          { q:"Students feel safe expressing their identities at school.", opts:[
+            "Most do not feel safe.",
+            "Some feel safe inconsistently.",
+            "Many feel safe in certain contexts.",
+            "Most feel safe across settings.",
+            "All students feel safe to express identities in all contexts."
+          ]},
+          { q:"Facilities promote safety and accessibility for all.", opts:[
+            "Facilities lack basic safety or accessibility.",
+            "Some improvements made.",
+            "Many areas improved.",
+            "Most facilities accessible and safe.",
+            "All facilities fully safe, accessible, and welcoming."
+          ]},
+          { q:"Safety and inclusion are discussed in staff meetings.", opts:[
+            "Not discussed.",
+            "Rarely discussed.",
+            "Discussed in some meetings.",
+            "Most meetings address them.",
+            "All meetings integrate safety and inclusion topics."
+          ]},
+          { q:"Peer leadership programs promote respectful school culture.", opts:[
+            "No peer leadership programs.",
+            "Programs exist but not focused on respect.",
+            "Many programs promote respect occasionally.",
+            "Most programs consistently promote respect.",
+            "All peer programs embed respect and inclusion in daily activities."
+          ]},
+        ]
+      }
+    ];
+
+    const OPEN = [
+      {domainKey:"D1",prompts:["What practices not listed here do you use to improve student learning?","What challenges do you notice when focusing on learning?" ]},
+      {domainKey:"D2",prompts:["What practices not listed here do you use to monitor teaching and learning?","What challenges do you notice when monitoring teaching and learning?"]},
+      {domainKey:"D3",prompts:["What practices not listed here help you build learning communities?","What challenges do you notice when building learning communities?"]},
+      {domainKey:"D4",prompts:["What practices not listed here guide how you acquire or allocate resources?","What challenges do you notice when aligning resources with equity goals?"]},
+      {domainKey:"D5",prompts:["What practices not listed here help you maintain a safe and effective learning environment?","What challenges do you notice when working on safety and inclusion?"]},
+    ];
+
+    const KEY_RESP = "SAFE_RESPONSES_V4";
+    const KEY_PAGE = "SAFE_PAGE_V4";
+    const KEY_DATA = "CALL_EQ_DATA";
+    const KEY_PROFILE = "SAFE_PROFILE_V4";
+
+    localStorage.setItem(KEY_DATA, JSON.stringify(DATA));
+
+    const pageEl = document.getElementById("page");
+    const pageCard = document.getElementById("pageCard");
+    const resultsCard = document.getElementById("resultsCard");
+    const stepperEl = document.getElementById("stepper");
+    const topActionsCard = document.getElementById("topActionsCard");
+
+    const backBtnTop = document.getElementById("backBtnTop");
+    const saveBtnTop = document.getElementById("saveBtnTop");
+    const nextBtnTop = document.getElementById("nextBtnTop");
+    const backBtnBottom = document.getElementById("backBtnBottom");
+    const saveBtnBottom = document.getElementById("saveBtnBottom");
+    const nextBtnBottom = document.getElementById("nextBtnBottom");
+
+    const donutCanvas = document.getElementById("donut");
+    const radarCanvas = document.getElementById("radar");
+    const barsEl = document.getElementById("bars");
+    const overallMeanEl = document.getElementById("overallMean");
+    const completionPctEl = document.getElementById("completionPct");
+    const resetBtn = document.getElementById("resetBtn");
+    const downloadCsvBtn = document.getElementById("downloadCsv");
+    const downloadJsonBtn = document.getElementById("downloadJson");
+
+    let pageIndex = Number(localStorage.getItem(KEY_PAGE) || 0);
+    const TOTAL_PAGES = 7;
+
+    let profile = JSON.parse(localStorage.getItem(KEY_PROFILE) || "{}");
+
+    let responses = JSON.parse(localStorage.getItem(KEY_RESP) || "[]");
+    if(responses.length === 0){
+      DATA.forEach(d => {
+        for(let i=0;i<d.items.length;i++){
+          responses.push({ domainKey:d.key, domainName:d.name, itemType:"scale", itemIndex:i+1, value:null, text:null });
+        }
+        const opens = OPEN.find(o => o.domainKey === d.key);
+        if(opens){
+          opens.prompts.forEach((p, j) => {
+            responses.push({ domainKey:d.key, domainName:d.name, itemType:"open", promptIndex:j+1, prompt:p, value:null, text:"" });
+          });
+        }
+      });
+      localStorage.setItem(KEY_RESP, JSON.stringify(responses));
+    }
+
+    // Local progress refs for the domain header
+    let localProgFill = null;
+    let localProgNote = null;
+    const progressPctTop = document.getElementById("progressPctTop");
+
+    function buildStepper(){
+      stepperEl.innerHTML = "";
+      const labels = ["Welcome", ...DATA.map(d => d.name), "Results"];
+      labels.forEach((name, idx) => {
+        const s = document.createElement("div");
+        s.className = "step" + (idx===pageIndex ? " active" : "");
+        s.textContent = `${idx+1}. ${name}`;
+        s.style.cursor = "pointer";
+        s.addEventListener("click", () => { pageIndex = idx; localStorage.setItem(KEY_PAGE, String(pageIndex)); renderRouter(); scrollTop(); });
+        stepperEl.appendChild(s);
+      });
+    }
+
+    function renderWelcome(){
+      const wrap = document.createElement("div");
+      wrap.className = "welcome-hero";
+
+      const title = document.createElement("h2");
+      title.style.margin = "10px 0 6px";
+      title.textContent = "Welcome";
+      wrap.appendChild(title);
+
+      // SAFE description
+      const desc = document.createElement("p");
+      desc.className = "lead";
+      desc.textContent = "The School Assessment for Equity (SAFE) helps schools reflect on their practices with an equity lens across five domains: Focus on Learning, Monitoring Teaching and Learning, Building Nested Learning Communities, Acquiring and Allocating Resources, and Safe and Effective Learning Environment.";
+      wrap.appendChild(desc);
+
+      const blurb = document.createElement("p");
+      blurb.className = "lead";
+      blurb.textContent = "Please complete information below.";
+      wrap.appendChild(blurb);
+
+      const form = document.createElement("div");
+      form.style.marginTop = "12px";
+      const two1 = document.createElement("div"); two1.className="two";
+      const f1 = field("Full name", "text", "fullName", profile.fullName || "");
+      const f2 = selectField("Profession", "profession", ["", "Teacher", "Leadership Team (e.g., Principal, Assistant Principal)", "Support Staff"], profile.profession || "");
+      two1.appendChild(f1); two1.appendChild(f2);
+
+      const two2 = document.createElement("div"); two2.className="two";
+      const f3 = field("Email address", "email", "email", profile.email || "");
+      const f4 = field("School name", "text", "school", profile.school || "");
+      two2.appendChild(f3); two2.appendChild(f4);
+
+      const consent = document.createElement("label");
+      consent.style.display = "flex"; consent.style.alignItems = "center"; consent.style.gap = "8px"; consent.style.marginTop = "10px";
+      const cbox = document.createElement("input"); cbox.type = "checkbox"; cbox.id = "consent";
+      cbox.checked = !!profile.consent;
+      consent.appendChild(cbox);
+      const ctext = document.createElement("span"); ctext.textContent = "I consent to use my responses for school improvement only.";
+      consent.appendChild(ctext);
+
+      form.appendChild(two1);
+      form.appendChild(two2);
+      form.appendChild(consent);
+      wrap.appendChild(form);
+
+      const tip = document.createElement("p");
+      tip.className = "note";
+      tip.textContent = "You can return to this page anytime to update your info.";
+      wrap.appendChild(tip);
+
+      wrap.addEventListener("input", (e)=>{
+        const t = e.target;
+        if(!t.name && t.id !== "consent") return;
+        if(t.id === "consent"){ profile.consent = t.checked; }
+        else { profile[t.name] = t.value; }
+        localStorage.setItem(KEY_PROFILE, JSON.stringify(profile));
+      });
+
+      pageEl.appendChild(wrap);
+      topActionsCard.style.display = "none";
+    }
+
+    function field(labelText, type, name, value){
+      const wrap = document.createElement("div");
+      const label = document.createElement("label");
+      label.className = "q";
+      label.textContent = labelText;
+      const input = document.createElement("input");
+      input.type = type; input.name = name; input.value = value || "";
+      wrap.appendChild(label); wrap.appendChild(input);
+      return wrap;
+    }
+    function selectField(labelText, name, options, value){
+      const wrap = document.createElement("div");
+      const label = document.createElement("label");
+      label.className = "q";
+      label.textContent = labelText;
+      const sel = document.createElement("select");
+      sel.name = name;
+      options.forEach(opt => {
+        const o = document.createElement("option");
+        o.value = opt;
+        o.textContent = opt === "" ? "" : opt;
+        if(opt === value) o.selected = true;
+        sel.appendChild(o);
+      });
+      wrap.appendChild(label); wrap.appendChild(sel);
+      return wrap;
+    }
+
+    function renderDomainPage(){
+      const domain = DATA[pageIndex-1];
+
+      // Domain header with title and local progress
+      const header = document.createElement("section");
+      header.className = "domainHeader";
+      const h2 = document.createElement("h2");
+      h2.textContent = domain.name; // No numbering or emoji
+      header.appendChild(h2);
+      // Local progress
+      const lp = document.createElement("div");
+      lp.className = "progress";
+      const lpSpan = document.createElement("span");
+      lp.appendChild(lpSpan);
+      const lpNote = document.createElement("div");
+      lpNote.className = "note";
+      lpNote.textContent = "0 of 50 answered";
+      header.appendChild(lp);
+      header.appendChild(lpNote);
+      pageEl.appendChild(header);
+      localProgFill = lpSpan;
+      localProgNote = lpNote;
+
+      // Items wrap without domain title
+      const domainEl = document.createElement("section");
+      domainEl.className = "domain";
+
+      // 10 scale items with composite numbering (domainIdx.itemIdx)
+      domain.items.forEach((itemObj, iIndex) => {
+        const itemId = `${domain.key}_Q${iIndex+1}`;
+        const item = document.createElement("div");
+        item.className = "item";
+        const p = document.createElement("p");
+        p.className = "q";
+        const domainNumber = pageIndex; // 1..5 for domains
+        p.textContent = `${domainNumber}.${iIndex+1}. ${itemObj.q}`;
+        item.appendChild(p);
+
+        const options = document.createElement("div");
+        options.className = "options";
+
+        itemObj.opts.forEach((label, idx) => {
+          const optId = `${itemId}_O${idx+1}`;
+          const wrapper = document.createElement("label");
+          wrapper.className = "option";
+          wrapper.setAttribute("for", optId);
+
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = itemId;
+          input.id = optId;
+          input.value = String(idx+1);
+
+          const gIdx = globalScaleIndex(pageIndex-1, iIndex);
+          const saved = responses[gIdx]?.value;
+          if(saved === (idx+1)) input.checked = true;
+          if(saved === (idx+1)) wrapper.classList.add("active");
+
+          const span = document.createElement("span");
+          span.textContent = label;
+
+          wrapper.appendChild(input);
+          wrapper.appendChild(span);
+          wrapper.addEventListener("click", () => onChooseScale(gIdx, idx+1, wrapper, itemId));
+          options.appendChild(wrapper);
+        });
+
+        item.appendChild(options);
+        domainEl.appendChild(item);
+      });
+
+      // 2 open-ended items
+      const opens = OPEN.find(o => o.domainKey === domain.key);
+      if(opens){
+        const openWrap = document.createElement("div");
+        openWrap.className = "openwrap";
+        const h = document.createElement("h4");
+        h.textContent = "Open-ended reflections";
+        openWrap.appendChild(h);
+
+        opens.prompts.forEach((prompt, j) => {
+          const idx = globalOpenIndex(pageIndex-1, j);
+          const label = document.createElement("label");
+          label.className = "q";
+          label.textContent = prompt;
+          const ta = document.createElement("textarea");
+          ta.placeholder = "Type your response here...";
+          ta.value = responses[idx]?.text || "";
+          ta.addEventListener("input", () => {
+            responses[idx].text = ta.value;
+            localStorage.setItem(KEY_RESP, JSON.stringify(responses));
+          });
+          openWrap.appendChild(label);
+          openWrap.appendChild(ta);
+        });
+
+        domainEl.appendChild(openWrap);
+      }
+
+      pageEl.appendChild(domainEl);
+      topActionsCard.style.display = "block";
+    }
+
+    function renderRouter(){
+      buildStepper();
+
+      if(pageIndex === TOTAL_PAGES-1){
+        pageCard.classList.add("hidden");
+        resultsCard.classList.remove("hidden");
+        drawDashboard();
+        setButtons();
+        updateProgress();
+        return;
+      scrollTop();
+    }
+
+      resultsCard.classList.add("hidden");
+      pageCard.classList.remove("hidden");
+      pageEl.innerHTML = "";
+      if(pageIndex === 0){
+        renderWelcome();
+      }else{
+        renderDomainPage();
+      }
+      setButtons();
+      updateProgress();
+    }
+
+    function setButtons(){
+      const isWelcome = pageIndex === 0;
+      const isLastBeforeResults = pageIndex === TOTAL_PAGES-2;
+
+      backBtnTop.disabled = isWelcome;
+      backBtnBottom.disabled = isWelcome;
+
+      if(isWelcome){
+        nextBtnTop.textContent = "Start";
+        nextBtnBottom.textContent = "Start";
+      }else if(isLastBeforeResults){
+        nextBtnTop.textContent = "Go to results";
+        nextBtnBottom.textContent = "Go to results";
+      }else{
+        nextBtnTop.textContent = "Next";
+        nextBtnBottom.textContent = "Next";
+      }
+    }
+
+    function onChooseScale(globalIdx, value, wrapper, itemName){
+      document.querySelectorAll(`label.option`).forEach(l => {
+        const input = l.querySelector('input[type="radio"]');
+        if(input && input.name === itemName){ l.classList.remove('active'); }
+      });
+      wrapper.classList.add('active');
+
+      responses[globalIdx].value = Number(value);
+      localStorage.setItem(KEY_RESP, JSON.stringify(responses));
+      updateProgress();
+    }
+
+    function globalScaleIndex(domainIdx, itemIdx){ return domainIdx*12 + itemIdx; }
+    function globalOpenIndex(domainIdx, openOrdinalZeroBased){ return domainIdx*12 + 10 + openOrdinalZeroBased; }
+
+    function updateProgress(){
+      const scale = responses.filter(r => r.itemType === "scale");
+      const total = scale.length;
+      const answered = scale.filter(r => r.value !== null).length;
+      const pct = Math.round((answered/total)*100);
+
+      // top pill only
+      progressPctTop.textContent = pct + "%";
+
+      // local header progress (pages 2-6)
+      if(localProgFill && localProgNote){
+        localProgFill.style.width = pct + "%";
+        localProgNote.textContent = answered + " of " + total + " answered";
+      }
+    }
+
+    function mean(arr){
+      const nums = arr.filter(v => typeof v === "number");
+      if(nums.length === 0) return null;
+      const sum = nums.reduce((a,b)=>a+b,0);
+      return +(sum / nums.length).toFixed(2);
+    }
+    function pct(n,d){ return d === 0 ? 0 : Math.round((n/d)*100); }
+
+    function getDomainMeans(){
+      const means = [];
+      DATA.forEach((d, di) => {
+        const vals = [];
+        for(let i=0;i<10;i++){
+          const idx = globalScaleIndex(di, i);
+          vals.push(responses[idx]?.value ?? null);
+        }
+        means.push({ key:d.key, name:d.name, mean: mean(vals) });
+      });
+      return means;
+    }
+
+    function drawDashboard(){
+      const means = getDomainMeans();
+      const answered = responses.filter(r=>r.itemType==="scale" && r.value!==null).length;
+      const total = responses.filter(r=>r.itemType==="scale").length;
+      const overall = mean(responses.filter(r=>r.itemType==="scale").map(r=>r.value));
+
+      overallMeanEl.textContent = overall !== null ? overall.toFixed(2) : "-";
+      completionPctEl.textContent = pct(answered,total) + "%";
+
+      drawBars(means);
+      drawDonut(answered, total);
+      drawRadar(means);
+    }
+
+    function drawBars(means){
+      barsEl.innerHTML = "";
+      means.forEach(m => {
+        const row = document.createElement("div");
+        row.className = "bar-row";
+        const label = document.createElement("div");
+        label.className = "bar-label";
+        label.textContent = m.name;
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        const fill = document.createElement("span");
+        const w = m.mean ? Math.round((m.mean/5)*100) : 0;
+        fill.style.width = "0%";
+        bar.appendChild(fill);
+        row.appendChild(label);
+        row.appendChild(bar);
+        const score = document.createElement("strong");
+        score.style.minWidth = "42px";
+        score.textContent = m.mean !== null ? m.mean.toFixed(2) : "-";
+        row.appendChild(score);
+        barsEl.appendChild(row);
+        requestAnimationFrame(()=>{ fill.style.width = w + "%"; });
+      });
+    }
+
+    function drawDonut(answered, total){
+      const ctx = donutCanvas.getContext("2d");
+      const W = donutCanvas.width = donutCanvas.clientWidth;
+      const H = donutCanvas.height = donutCanvas.clientHeight;
+      ctx.clearRect(0,0,W,H);
+      const cx = W/2, cy = H/2, r = Math.min(W,H)/3, thick = r*0.35;
+      ctx.lineWidth = thick;
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+      const frac = total ? answered/total : 0;
+      const end = -Math.PI/2 + frac*Math.PI*2;
+      const grd = ctx.createLinearGradient(0,0,W,0);
+      grd.addColorStop(0,"#60a5fa"); grd.addColorStop(1,"#3b82f6");
+      ctx.strokeStyle = grd;
+      ctx.beginPath(); ctx.arc(cx,cy,r,-Math.PI/2,end); ctx.stroke();
+      ctx.fillStyle = "#0f172a";
+      ctx.font = "bold "+(r*0.5)+"px Inter, system-ui, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.fillText(Math.round(frac*100)+"%", cx, cy);
+    }
+
+    function drawRadar(means){
+      const ctx = radarCanvas.getContext("2d");
+      const W = radarCanvas.width = radarCanvas.clientWidth;
+      const H = radarCanvas.height = radarCanvas.clientHeight;
+      ctx.clearRect(0,0,W,H);
+      const cx = W/2, cy = H/2;
+      const radius = Math.min(W,H)/2 - 40;
+      const points = means.length;
+      ctx.strokeStyle = "#e5e7eb";
+      for(let ring=1; ring<=5; ring++){
+        ctx.beginPath();
+        for(let i=0;i<points;i++){
+          const ang = (i/points)*Math.PI*2 - Math.PI/2;
+          const r = radius*(ring/5);
+          const x = cx + r*Math.cos(ang);
+          const y = cy + r*Math.sin(ang);
+          if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+        }
+        ctx.closePath(); ctx.stroke();
+      }
+      ctx.strokeStyle = "#cbd5e1";
+      for(let i=0;i<points;i++){
+        const ang = (i/points)*Math.PI*2 - Math.PI/2;
+        ctx.beginPath();
+        ctx.moveTo(cx,cy);
+        ctx.lineTo(cx + radius*Math.cos(ang), cy + radius*Math.sin(ang));
+        ctx.stroke();
+      }
+      const grd = ctx.createLinearGradient(0,0,W,0);
+      grd.addColorStop(0,"#22c55e"); grd.addColorStop(1,"#16a34a");
+      ctx.fillStyle = "rgba(34,197,94,0.25)";
+      ctx.strokeStyle = grd;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      means.forEach((m,i) => {
+        const ang = (i/points)*Math.PI*2 - Math.PI/2;
+        const r = radius * ((m.mean || 0)/5);
+        const x = cx + r*Math.cos(ang);
+        const y = cy + r*Math.sin(ang);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // labels
+      ctx.fillStyle = "#111827";
+      ctx.font = "12px Inter, system-ui, sans-serif";
+      means.forEach((m,i) => {
+        const ang = (i/points)*Math.PI*2 - Math.PI/2;
+        const r = radius + 18;
+        const x = cx + r*Math.cos(ang);
+        const y = cy + r*Math.sin(ang);
+        const cos = Math.cos(ang);
+        const sin = Math.sin(ang);
+        if(Math.abs(cos) < 0.3){ ctx.textAlign = "center"; }
+        else if(cos > 0){ ctx.textAlign = "left"; }
+        else { ctx.textAlign = "right"; }
+        if(Math.abs(sin) < 0.3){ ctx.textBaseline = "middle"; }
+        else if(sin > 0){ ctx.textBaseline = "top"; }
+        else { ctx.textBaseline = "bottom"; }
+        ctx.fillText(m.name, x, y);
+      });
+    }
+
+    function toCsv(){
+      const headers = ["fullName","profession","email","school","consent","domainKey","domainName","type","itemIndexOrPrompt","value","text"];
+      const profileRowBase = [profile.fullName||"", profile.profession||"", profile.email||"", profile.school||"", profile.consent? "yes":"no"];
+      const rows = [headers.join(",")];
+      responses.forEach(r => {
+        rows.push([
+          ...profileRowBase,
+          r.domainKey,
+          `"${r.domainName}"`,
+          r.itemType,
+          r.itemType === "scale" ? r.itemIndex : r.promptIndex,
+          r.itemType === "scale" ? (r.value ?? "") : "",
+          r.itemType === "open" ? `"${(r.text||"").replace(/"/g, '""')}"` : ""
+        ].join(","));
+      });
+      return rows.join("\n");
+    }
+
+    function download(filename, content, mime){
+      const blob = new Blob([content], {type: mime});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      a.remove();
+    }
+
+    function exportCsv(){ download("safe_school_equity.csv", toCsv(), "text/csv"); }
+    function exportJson(){ download("safe_school_equity.json", JSON.stringify({profile, responses}, null, 2), "application/json"); }
+
+    function savePage(){
+      localStorage.setItem(KEY_RESP, JSON.stringify(responses));
+      localStorage.setItem(KEY_PAGE, String(pageIndex));
+      localStorage.setItem(KEY_PROFILE, JSON.stringify(profile));
+    }
+
+    function goBack(){
+      if(pageIndex>0){
+        savePage();
+        pageIndex--;
+        localStorage.setItem(KEY_PAGE, String(pageIndex));
+        renderRouter();
+      }
+    }
+    function goNext(){
+      if(pageIndex < TOTAL_PAGES-1){
+        savePage();
+        pageIndex++;
+        localStorage.setItem(KEY_PAGE, String(pageIndex));
+        renderRouter();
+      }
+    }
+
+    backBtnTop.addEventListener("click", goBack);
+    saveBtnTop.addEventListener("click", savePage);
+    nextBtnTop.addEventListener("click", goNext);
+    backBtnBottom.addEventListener("click", goBack);
+    saveBtnBottom.addEventListener("click", savePage);
+    nextBtnBottom.addEventListener("click", goNext);
+
+    resetBtn && resetBtn.addEventListener("click", () => {
+      localStorage.removeItem(KEY_RESP);
+      localStorage.removeItem(KEY_PROFILE);
+      profile = {};
+      responses = [];
+      DATA.forEach(d => {
+        for(let i=0;i<d.items.length;i++){
+          responses.push({ domainKey:d.key, domainName:d.name, itemType:"scale", itemIndex:i+1, value:null, text:null });
+        }
+        const opens = OPEN.find(o => o.domainKey === d.key);
+        if(opens){
+          opens.prompts.forEach((p, j) => {
+            responses.push({ domainKey:d.key, domainName:d.name, itemType:"open", promptIndex:j+1, prompt:p, value:null, text:"" });
+          });
+        }
+      });
+      pageIndex = 0;
+      localStorage.setItem(KEY_PAGE, "0");
+      localStorage.setItem(KEY_RESP, JSON.stringify(responses));
+      renderRouter();
+    });
+    downloadCsvBtn && downloadCsvBtn.addEventListener("click", exportCsv);
+    downloadJsonBtn && downloadJsonBtn.addEventListener("click", exportJson);
+
+    renderRouter();
+  </script>
+</body>
+</html>
